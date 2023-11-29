@@ -293,6 +293,11 @@ static int dw_spi_mmio_probe(struct platform_device *pdev)
 		if (ret)
 			goto out;
 	}
+	
+	printk("dws->irq: %d\n", dws->irq);
+	printk("dws->max_freq: %d\n", dws->max_freq);
+	printk("dws->reg_io_width: %d\n", dws->reg_io_width);
+	printk("dws->num_cs: %d\n", dws->num_cs);
 
 	pm_runtime_enable(&pdev->dev);
 

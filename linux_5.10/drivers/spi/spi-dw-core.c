@@ -139,6 +139,7 @@ static void dw_writer(struct dw_spi *dws)
 	u32 max = tx_max(dws);
 	u16 txw = 0;
 
+	printk("=============%s %d max: %d\n", __FILE__, __LINE__, max);
 	while (max--) {
 		if (dws->tx) {
 			if (dws->n_bytes == 1)
@@ -158,6 +159,7 @@ static void dw_reader(struct dw_spi *dws)
 	u32 max = rx_max(dws);
 	u16 rxw;
 
+	printk("=============%s %d max: %d\n", __FILE__, __LINE__, max);
 	while (max--) {
 		rxw = dw_read_io_reg(dws, DW_SPI_DR);
 		if (dws->rx) {
@@ -356,6 +358,7 @@ static void dw_spi_irq_setup(struct dw_spi *dws)
 	level = min_t(u16, dws->fifo_len / 2, dws->tx_len);
 	dw_writel(dws, DW_SPI_TXFTLR, level);
 	dw_writel(dws, DW_SPI_RXFTLR, level - 1);
+	printk("=============%s %d level: %d\n", __FILE__, __LINE__, level);
 
 	dws->transfer_handler = dw_spi_transfer_handler;
 
@@ -411,12 +414,16 @@ static int dw_spi_transfer_one(struct spi_controller *master,
 	};
 	int ret;
 
+	printk("=============%s %d\n", __FILE__, __LINE__);
 	dws->dma_mapped = 0;
 	dws->n_bytes = DIV_ROUND_UP(transfer->bits_per_word, BITS_PER_BYTE);
 	dws->tx = (void *)transfer->tx_buf;
 	dws->tx_len = transfer->len / dws->n_bytes;
 	dws->rx = transfer->rx_buf;
 	dws->rx_len = dws->tx_len;
+	printk("=============dws->n_bytes: %d\n", dws->n_bytes);
+	printk("=============dws->tx: %x tx_len: %d\n", dws->tx, dws->tx_len);
+	printk("=============dws->rx: %x rx_len: %d\n", dws->rx, dws->rx_len);
 
 	/* Ensure the data above is visible for all CPUs */
 	smp_mb();
@@ -426,6 +433,7 @@ static int dw_spi_transfer_one(struct spi_controller *master,
 	dw_spi_update_config(dws, spi, &cfg);
 
 	transfer->effective_speed_hz = dws->current_freq;
+	printk("=============transfer->effective_speed_hz: %d\n", transfer->effective_speed_hz);
 
 	/* Check if current transfer is a DMA transaction */
 	if (master->can_dma && master->can_dma(master, spi, transfer))
@@ -852,6 +860,7 @@ int dw_spi_add_host(struct device *dev, struct dw_spi *dws)
 
 	/* Basic HW init */
 	spi_hw_init(dev, dws);
+	printk("=============%s %d\n", __FILE__, __LINE__);
 
 	ret = request_irq(dws->irq, dw_spi_irq, IRQF_SHARED, dev_name(dev),
 			  master);
