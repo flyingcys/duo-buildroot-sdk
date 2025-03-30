@@ -242,6 +242,7 @@ int board_init(void)
 	pinmux_config(PINMUX_LVDS);
 #endif
 	pinmux_config(PINMUX_SDIO1);
+	pinmux_config(PINMUX_SPI2);
 	cvi_board_init();
 	return 0;
 }

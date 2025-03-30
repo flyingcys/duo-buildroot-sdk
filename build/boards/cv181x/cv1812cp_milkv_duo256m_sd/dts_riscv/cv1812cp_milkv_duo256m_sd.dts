@@ -17,13 +17,40 @@
 &spi2 {
 	status = "okay";
 
-	spidev@0 {
-		status = "okay";
+    /delete-node/ spidev@0;
+    st7789v: st7789v@0{
+        compatible = "sitronix,st7789v";
+        reg = <0>;
+        status = "okay";
+        spi-max-frequency = <48000000>;
+        spi-cpol;
+        spi-cpha;
+        rotate = <0>;
+        fps = <60>;
+        rgb;
+        buswidth = <8>;
+
+        dc = <&porta 24 GPIO_ACTIVE_HIGH>;
+        reset = <&porta 23 GPIO_ACTIVE_HIGH>;
+
+        debug = <0x0>;
 	};
 };
 
 &i2c0 {
 	status = "disabled";
+};
+
+&i2c2 {
+    status = "okay";
+
+	gt9xx: gt9xx@14 {
+		compatible = "goodix,gt9xx";
+		reg = <0x14>;
+		goodix,irq-gpio = <&porta 14 0>;
+		goodix,rst-gpio = <&porta 15 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+	};
 };
 
 &i2c4 {
